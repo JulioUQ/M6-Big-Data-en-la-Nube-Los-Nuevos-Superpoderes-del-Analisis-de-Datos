@@ -274,9 +274,122 @@ Esta sección explica cómo proteger los recursos dentro de una Amazon VPC media
 
 ---
 
+## Sección 5: Amazon Route 53
 
-**Sección 5: Amazon Route 53**  
-Cubre la **resolución de nombres de dominio (DNS)** y las capacidades de **Amazon Route 53**, incluyendo la conmutación por error de DNS y su relación con la **alta disponibilidad**, que se explorará en detalle en el Módulo 10.
+Esta sección cubre los conceptos de **resolución de nombres de dominio (DNS)** y explica cómo **Amazon Route 53** permite enrutar el tráfico de los usuarios de forma **altamente disponible, escalable y tolerante a fallos**, siendo una pieza clave en arquitecturas globales.
 
-**Sección 6: Amazon CloudFront**  
-Analiza las funciones y beneficios de **Amazon CloudFront** como servicio de entrega de contenido (CDN) para mejorar la disponibilidad y velocidad de distribución de contenidos.
+### Resolución de DNS con Amazon Route 53
+
+- El **Sistema de Nombres de Dominio (DNS)** traduce nombres de dominio legibles (por ejemplo, `www.ejemplo.com`) en **direcciones IP**.
+    
+- Amazon Route 53 es un servicio de **DNS administrado**, diseñado para ofrecer:
+    
+    - Baja latencia
+    - Alta disponibilidad
+    - Escalabilidad automática
+
+- Route 53 responde a las consultas DNS dirigiendo a los usuarios al recurso más adecuado.
+
+### Amazon Route 53
+
+- Es un servicio **altamente disponible y tolerante a fallos**.
+    
+- Se integra de forma nativa con otros servicios de AWS como:
+    
+    - Amazon EC2
+    - Elastic Load Balancing
+    - Amazon S3
+    - AWS Global Accelerator
+
+- Permite registrar dominios, gestionar zonas hospedadas y configurar políticas de enrutamiento avanzadas.
+
+### Direccionamiento admitido por Amazon Route 53
+
+Amazon Route 53 puede dirigir el tráfico DNS hacia distintos tipos de recursos, entre ellos:
+
+- Instancias de **Amazon EC2**
+- **Elastic Load Balancers**
+- **Buckets de Amazon S3** configurados como sitios web
+- **Direcciones IP** (IPv4 e IPv6)
+- Recursos externos a AWS
+
+### Caso de uso: Implementación en varias regiones
+
+- Route 53 permite distribuir el tráfico entre **múltiples regiones de AWS**.
+
+- Beneficios principales:
+    - Mayor **disponibilidad**
+    - Menor **latencia para los usuarios**
+    - Resiliencia ante fallos regionales
+
+- Se combina habitualmente con **Elastic Load Balancing** y **Auto Scaling**.
+
+### Conmutación por error a nivel de DNS con Amazon Route 53
+
+- Route 53 admite **políticas de enrutamiento con conmutación por error (failover)**.
+- Funciona junto con **comprobaciones de estado (health checks)** para:
+    - Detectar recursos no disponibles
+    - Redirigir automáticamente el tráfico a un recurso de respaldo
+
+- Esta conmutación ocurre a nivel de **DNS**, no a nivel de aplicación.
+
+### Conmutación por error a nivel de DNS para una aplicación web de varias capas
+
+- En una arquitectura de varias capas (web, aplicación y base de datos):
+    - Route 53 dirige el tráfico a la capa web disponible.
+    - Si la región principal falla, el tráfico se redirige a una región secundaria.
+
+- Mejora la **continuidad del servicio** y la **experiencia del usuario**.
+
+---
+## Sección 6: Amazon CloudFront
+
+Esta sección analiza **Amazon CloudFront**, el servicio de **red de entrega de contenido (CDN)** de AWS, y cómo ayuda a mejorar la **velocidad**, **disponibilidad** y **rendimiento** de aplicaciones y sitios web al distribuir el contenido a través de una red global.
+
+### Entrega de contenido y latencia de red
+
+- La **latencia de red** es el tiempo que tarda el contenido en viajar desde el servidor hasta el usuario final.
+
+- Cuanto mayor es la distancia entre el usuario y el origen del contenido, mayor es la latencia.
+- Amazon CloudFront reduce la latencia al:
+    - Almacenar en caché copias del contenido en ubicaciones cercanas a los usuarios.
+    - Entregar el contenido desde el **punto de presencia (Edge Location)** más próximo.
+
+- Es especialmente útil para:
+    - Sitios web
+    - Contenido estático (imágenes, vídeos, archivos)
+    - APIs y contenido dinámico
+
+### Infraestructura de Amazon CloudFront
+
+- CloudFront utiliza una **red global de puntos de presencia (Edge Locations)** distribuidos por todo el mundo.
+- Estos puntos de presencia forman parte de la **infraestructura global de AWS**.
+- Componentes clave de la infraestructura de CloudFront:
+    - **Origen (Origin)**: recurso que almacena el contenido original (por ejemplo, Amazon S3, EC2, ELB).
+    - **Distribución de CloudFront**: configuración que define cómo se entrega el contenido.
+    - **Edge Locations**: ubicaciones que almacenan y sirven el contenido en caché.
+
+- Beneficios principales:
+    - Menor latencia
+    - Mayor disponibilidad
+    - Protección contra picos de tráfico
+    - Integración con servicios de seguridad como **AWS Shield** y **AWS WAF**
+
+---
+
+## Conclusión del modulo
+
+En resumen, en este modulo, aprendió a hacer lo siguiente:
+- Reconocer los conceptos básicos de las redes.
+- Describir las redes virtuales en la nube con Amazon VPC.
+- Etiquetar un diagrama de red.
+- Diseñar una arquitectura básica de VPC.
+- Indicar los pasos para crear una VPC.
+- Identificar los grupos de seguridad.
+- Crear su propia VPC y agregarle componentes adicionales para generar una red personalizada.
+- Identificar los aspectos fundamentales de Amazon Route 53.
+- Reconocer los beneficios de Amazon CloudFront.
+### Pregunta del examen de muestra
+
+¿Qué servicio de redes AWS permite a una empresa crear una red virtual dentro de AWS?
+- Amazon VPC.

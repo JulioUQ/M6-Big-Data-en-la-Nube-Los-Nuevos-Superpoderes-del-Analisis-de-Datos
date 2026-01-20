@@ -6,8 +6,8 @@ import requests
 from datetime import datetime, timezone
 
 REGION = "us-east-1"
-MASTODON_SECRET_ID = "API-KEY-MASTODON"
-STREAM_NAME = "mastodont-intake"
+MASTODON_SECRET_ID = "API-Key-Mastodon"
+STREAM_NAME = "mastodon-intake"
 
 # Elige UNA fuente:
 MODE = "public"
@@ -45,7 +45,7 @@ def fetch_statuses(base_url, token, since_id=None):
 def main():
     cfg = get_secret()
     base_url = cfg["MASTODON_BASE_URL"].rstrip("/")
-    token = cfg["API-Mastodon"]
+    token = cfg["MastodonProducer"]
 
     since_id = None
     backoff = 5

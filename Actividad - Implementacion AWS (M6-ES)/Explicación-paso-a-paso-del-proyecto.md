@@ -33,6 +33,26 @@ He utilizado el servicio EC2 de AWS para crear una maquina virtual, o instancia,
 
 Ahora en el panel puedo ver mi instancia junto a sus propiedades como: Nombre, Id de la Instancia, Estado de la instancia (En ejecución), tipo de isntancia, comprobacion de estado (3/3 comprobaciones superadas), estado de alarma, zona de disponibilidad, dns de ipv4 publica, direccion ip, etc...
 
+Para conectarme con la EC2 sigo los siguientes pasos:
+1. En el panel de AWS en el servicio EC2 clicko sobre Conectar.
+2. Copio el ejemplo de ssh que se indica al final de la pagina. (ssh -i "KeyPair-Mastodon-producer.pem" ec2-user@ec2-13-220-109-136.compute-1.amazonaws.com)
+3. En la carpeta donde se encuentra el par de claves del EC2 abro una terminal e indico este chunk de codigo para entrar en la EC2.
+4. Instalo python y sus dependencias:
+	- sudo dnf update -y
+	- sudo dnf install -y python3-pip
+	- pip3 install --user boto3 requests
+
+## Secrets Manager
+
+He utilizado el servicio Secrets Manager de AWS para almacenar secretos, que se ejecuta en la nube de AWS. Los pasos han sido los siguientes:
+
+1. En el panel de AWS selecciono el servicio Secrets Manager.
+2. En el apartado 'Secretos' presiono sobre 'Almacenar un secreto nuevo'.
+3. Como tipo de secreto selecciono 'Otro tipo de secreto (Clave API, token OAuth, otros.)'.
+4. Doy nombre al par clave-valor, añadiendo el token de Mastodon o de HuggingFace, para cada secreto respectivamente (Secreto MastodonProducer y secreto AWS-model_uoc).
+5. Nombro el secreto de manera que me ayude a encontrar el secreto mas adelante.
+6. El resto de apartados y secciones permanecen por defecto.
+
 ## S3
 
 He generado un contenedor de datos almacenados en S3, o bucket mediante el servicio S3 de AWS. Los pasos han sido los siguientes:
@@ -60,61 +80,19 @@ He generado una secuencia de datos con el objetivo de ingerir datos de transmisi
 
 ## Lambda
 
+He generado una funcion lambda con el objetivo de procesar datos de la transmisión, transformarlos y entregarlos a mi servicio S3 de forma fiable. Los pasos han sido los siguientes:
+
+1. En el panel de AWS selecciono el servicio lamda.
+2. En el apartado 'Funciones' presiono sobre 'Crear funcion'.
+3. 
 
 
 
 
 
 
-
-# Segmentacion del uso de los servicios
-
-El proyecto se desarrolla mediante un pipeline de procesamiento de datos distribuido en cuatro fases principales, en donde se usan servicios de AWS acorde a cada necesidad.
-
-### 1. Captura de los datos
-
-* Secrets Manager: Centraliza la gestión de credenciales. Se utiliza para almacenar de forma segura la URL de origen de Mastodon y las API Keys necesarias para la extracción y el posterior análisis de sentimientos (HuggingFace).  
-
-* EC2: Capacidad de cómputo inicial mediante una instancia virtual en donde reside un script en Python que actúa como productor, realizando la llamada a la API de Mastodon e iniciando el streaming de datos en tiempo real.  
-
-* Kinesis: Usado para el Data Stream. Es la "tubería" que transporta el flujo masivo de datos desde la instancia EC2 hacia las funciones de procesamiento en Lambda.
-
-### 2. Procesado de datos
-
-* Lambda: Ejecuta funciones sin servidor. Se encarga de transformar los datos crudos provenientes de Kinesis y estructurarlos antes de su almacenamiento en S3. Este proceso se realiza en _batches_ para optimizar las ejecuciones de lambda.  
-
-* S3: Almacenamiento de datos. En esta fase, se utiliza un bucket con una subcarpeta específica para alojar los datos estructurados de mastodon listos para el análisis.
-
-### 3. Motor de analisis de sentimientos
-
-* Lambda: Una segunda función se activa ante eventos de escritura en S3, es decir cuando se recibe un _batch_ nuevo desde el streaming inicial. Esta función realiza una llamada a la API de HuggingFace que utiliza un modelo de _deep learning_ para procesar el texto y asignar una categoría de sentimiento a cada registro.  
-
-* S3: Los resultados finales enriquecidos con las métricas del análisis de sentimientos se almacenan en otra subcarpeta, separándolos de los datos de origen _(raw)_.
-
-### 4. Analitica y reportes
-
-* Athena: Se almacenan los datos ya procesados en una tabla particionada por fecha. Mediante un evento de Event Bridge se añaden los datos no particionados (los que se generan en un nuevo dia) a la tabla. Una vez añadida la partición de fecha (a las 00:05), los registros se actualizan automaticamente. Esto permite ejecutar consultas directamente sobre los datos almacenados en S3 utilizando lenguaje estándar SQL. Los resultados de las consultas se almacenan en otra subcarpeta "_athena-results_" en S3.  
-
-* EC2: En una segunda instancia dedicada, se ejecuta una aplicación de streamlit en Python para la visualización de datos. Esta consume la información procesada a través de PyAthena para generar reportes y dashboards. Mediante la creación de un grupo de seguridad, se permite el acceso desde red externa a través del puerto TCP 8501 de las IPs autorizadas.
-
-## Esquema y flujo de datos
-
-1. Usando una instancia de EC2 que es host de un scrypt de python, hacemos una llamada a la API de la red social Mastodon e iniciamos el stream de los datos.  
-
-2. Usamos Kinesis como la tuberia por donde fluye el stream de data.  
-
-3. A traves de una funcion lambda, procesamos los datos que estan siendo transmitidos en Kinesis y los almacenamos como data inicial (raw) en un bucket de S3.  
-
-4. Con una segunda funcion en lambda, la cual se activa cada vez que ingresa un nuevo archivo 'raw' en S3. Hacemos uso del motor de analisis de sentimiento de la API de HuggingFace. Como resultado, obtenemos un sentimiento idenficado por cada registro. Los datos procesados que luego enviada a una carpeta del bucket de S3 (processed) utilizando la misma funcion lambda. 
-
-5. A traves de Athena, generamos tablas y bases de datos que permitan analizar de forma estructurada los datos resultantes y procesados.  
-
-6. En una segunda instancia de EC2. A traves de un scrypt de python, generamos una app con dashboards interactivos.
 ---
 
-sudo dnf update -y
-sudo dnf install -y python3-pip
-pip3 install --user boto3 requests
 
 aws kinesis describe-stream \
 --stream-name twitter-streaming-intake \
@@ -128,3 +106,5 @@ sudo dnf install -y python3-pip
 pip3 install --user streamlit pandas matplotlib boto3 pyathena
 
 streamlit run nombre_del_archivo.py
+8081
+8051

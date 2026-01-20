@@ -11,18 +11,18 @@ s3 = boto3.client("s3")
 sm = boto3.client("secretsmanager", region_name="us-east-1")
 
 # Hugging Face
-HF_SECRET_ID = "hugging-face-token"
+HF_SECRET_ID = "API-Key-HuggingFace"
 HF_MODEL_ID = "tabularisai/multilingual-sentiment-analysis"
 HF_MODEL_URL = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL_ID}"
 
 # S3
 RAW_PREFIX = r"rawdata/"
-PROCESSED_PREFIX = r"processeddata/mastodon_sentiment_analysis/"
+PROCESSED_PREFIX = r"processeddata/"
 
 def get_hf_token():
     sec = sm.get_secret_value(SecretId=HF_SECRET_ID)
     sec_json = json.loads(sec["SecretString"])
-    return sec_json["HF_TOKEN"]
+    return sec_json["AWS-model_uoc"]
 
 def hf_call(token: str, text: str, retries: int = 6):
     payload = json.dumps({

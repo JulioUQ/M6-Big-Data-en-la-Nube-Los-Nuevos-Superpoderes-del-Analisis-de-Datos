@@ -1,0 +1,80 @@
+############################################
+# 🔐 Secrets / Claves / Credenciales
+############################################
+
+# Carpetas de claves
+Claves/
+**/Claves/
+secrets/
+**/secrets/
+
+# Archivos de secretos
+*.env
+.env
+.env.*
+*.secret
+*.secrets
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.csr
+
+# Tokens y configuraciones locales
+config/secrets.*
+config/*.env
+
+############################################
+# ☁️ AWS
+############################################
+
+# Credenciales AWS locales
+.aws/
+**/.aws/
+
+# Archivos de configuración Terraform / Cloud
+*.tfstate
+*.tfstate.*
+.terraform/
+
+############################################
+# 🐍 Python / Jupyter
+############################################
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Caché Python
+__pycache__/
+*.py[cod]
+
+# Jupyter
+.ipynb_checkpoints/
+
+############################################
+# 🧪 Datos locales / temporales
+############################################
+
+data/
+tmp/
+temp/
+logs/
+*.log
+
+############################################
+# 🖥️ Sistema / IDE
+############################################
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# MacOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini

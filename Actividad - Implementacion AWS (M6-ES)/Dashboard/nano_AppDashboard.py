@@ -7,7 +7,7 @@ from pyathena import connect
 # Configuración Athena
 # =========================
 REGION = "us-east-1"
-S3_STAGING_DIR = "s3://bucketmastodonjubedaq/athena/"
+S3_STAGING_DIR = "s3://bucket-data-mastodon/athena/"
 DATABASE = "MastodonAnalysis"
 TABLE = "mastodon_sentiment"
 
@@ -148,7 +148,7 @@ st.subheader("🙂 Distribución emocional")
 c1, c2 = st.columns([1, 1])
 
 with c1:
-    dist["sentiment_label"] = dist["sentiment"].apply(sentiment_color) + " " + dist["sentiment"]
+    dist["sentiment_label"] = dist["sentiment"].apply(sentiment_color) + " " + dist["sentiment"] # type: ignore
     st.dataframe(
         dist[["sentiment_label", "total"]],
         use_container_width=True,
@@ -159,7 +159,7 @@ with c2:
     fig = plt.figure(figsize=(6, 4))
     plt.pie(
         dist["total"],
-        labels=dist["sentiment"],
+        labels=dist["sentiment"], # type: ignore
         autopct="%1.1f%%",
         startangle=90,
     )

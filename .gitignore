@@ -53,6 +53,7 @@ __pycache__/
 
 # Jupyter
 .ipynb_checkpoints/
+FINAL_actividad_cloud_aws_ES.ipynb
 
 ############################################
 # 🧪 Datos locales / temporales
